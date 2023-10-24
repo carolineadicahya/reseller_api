@@ -10,12 +10,12 @@ use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
-    // tabel barang
+    // tabel detail
     //get
-    $app->get('/barang', function(Request $request, Response $response) {
+    $app->get('/detail_pesanan', function(Request $request, Response $response) {
         $db = $this->get(PDO::class);
 
-        $query = $db->query("SELECT * FROM barang"); //query digunakan agar langsung execute
+        $query = $db->query("SELECT * FROM detail_pesanan"); //query digunakan agar langsung execute
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
         $response->getBody()->write(json_encode($result));
 
@@ -23,94 +23,148 @@ return function (App $app) {
     });
 
     // get untuk satu data, by id
-    $app->get('/barang/{id}', function(Request $request, Response $response, $args) {
+    $app->get('/detail_pesanan/{id}', function(Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
-
-        $query = $db->prepare("SELECT * FROM barang where id_barang=?"); //prepare digunakan agar tidak langsung execute
-        $query->execute([$args['id_barang']]);
-        $result = $query->fetchAll(PDO::FETCH_ASSOC);
-        if ($result) {
-            $response->getBody()->write(json_encode($result[0]));
-        } else {
-            // Jika data tidak ditemukan, kirim respons dengan status 404
-            $response->getBody()->write(json_encode(['error' => 'Country not found']));
-            $response = $response->withStatus(404);
-        }
-
-        return $response->withHeader("Content-Type", "application/json");
-    });
-
-    // post
-    $app->post('/barang', function(Request $request, Response $response) {
-        $parsedBody = $request->getParsedBody();
-        
-        // kalo ga auto increment
-        $id_country = $parsedBody['id_barang'];
-        $countryName = $parsedBody['nama'];
-
-        $db = $this->get(PDO::class);
-        $query = $db->prepare('INSERT INTO barang (id_barang, nama) values (?, ?)');
-        $query->execute([$id_country, $countryName]);
-
-        $lastId = $db->lastInsertId();
-
-        $response->getBody()->write(json_encode(
-            [
-                'message' => 'country disimpan dengan id'. $lastId
-            ]
-        ));
-        return $response->withHeader("Content-Type", "application/json");
-    });
-
-    // put data (update)
-    $app->put('/barang{id}', function(Request $request, Response $response, $args) {
-        $parsedBody = $request->getParsedBody();
-        $currentId = $args['id_barang'];
-        $countryName = $parsedBody['nama'];
-        $db = $this->get(PDO::class);
-
-        $query = $db->prepare('UPDATE barang set nama = ? where id_barang = ?');
-        $query->execute([$countryName, $currentId]);
-
-        $response->getBody()->write(json_encode(
-            [
-                'message' => 'barang dengan id' . $currentId . 'telah diupdate dengan nama' . $countryName
-            ]
-        ));
-        return $response->withHeader("Content-Type", "application/json");
-    });
-
-    // delete data
-    $app->delete('/barang/{id}', function (Request $request, Response $response, $args) {
-        $currentId = $args['id_barang'];
-        $db = $this->get(PDO::class);
-
-        try {
-            $query = $db->prepare('DELETE FROM barang WHERE id_barang = ?');
-            $query->execute([$currentId]);
-
-            if ($query->rowCount() === 0) {
-                $response = $response->withStatus(404);
-                $response->getBody()->write(json_encode(
-                    [
-                        'message' => 'Data tidak ditemukan'
-                    ]
-                ));
+        $id = $args['id'];
+    
+        // Menyiapkan SQL untuk memanggil procedure GetDetailPesanan
+        $sql = "CALL GetDetailPesanan(:id)";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_STR);
+    
+        // Jalankan query
+        if ($stmt->execute()) {
+            // Mengambil hasil dari procedure
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($result) {
+                $response->getBody()->write(json_encode($result[0]));
             } else {
-                $response->getBody()->write(json_encode(
-                    [
-                        'message' => 'barang dengan id ' . $currentId . ' dihapus dari database'
-                    ]
-                ));
+                // Jika data tidak ditemukan, kirim respons dengan status 404
+                $response->getBody()->write(json_encode(['error' => 'Data pabrik tidak ditemukan']));
+                $response = $response->withStatus(404);
             }
-        } catch (PDOException $e) {
-            $response = $response->withStatus(500);
+        } else {
+            // Tangani kesalahan eksekusi query
+            $errorInfo = $stmt->errorInfo();
+            $response->getBody()->write(json_encode(['error' => $errorInfo]));
+            $response = $response->withStatus(500); // Atur status kode 500 untuk kesalahan server
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+    
+
+    // Post
+    $app->post('/detail_pesanan', function(Request $request, Response $response) {
+        $parsedBody = $request->getParsedBody();
+    
+        $idDetail = $parsedBody['id_detail'];
+        $idBarang = $parsedBody['id_barang'];
+        $idPesanan = $parsedBody['id_pemesanan'];
+        $jumlah = $parsedBody['jumlah'];
+        $harga = $parsedBody['harga'];
+    
+        $db = $this->get(PDO::class);
+    
+        try {
+            $query = $db->prepare('CALL AddDetailPesanan(?, ?, ?, ?, ?)');
+            $query->bindParam(1, $idDetail, PDO::PARAM_STR);
+            $query->bindParam(2, $idBarang, PDO::PARAM_STR);
+            $query->bindParam(3, $idPesanan, PDO::PARAM_STR);
+            $query->bindParam(4, $jumlah, PDO::PARAM_INT);
+            $query->bindParam(5, $harga, PDO::PARAM_INT);
+    
+            $query->execute();
+    
             $response->getBody()->write(json_encode(
                 [
-                    'message' => 'Database error ' . $e->getMessage()
+                    'message' => 'Detail pesanan disimpan dengan id ' . $idDetail
+                ]
+            ));
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Gagal menyimpan detail pesanan: ' . $e->getMessage()
                 ]
             ));
         }
         return $response->withHeader("Content-Type", "application/json");
     });
+
+    // put
+    $app->put('/detail_pesanan/{id}', function(Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+        $id = $args['id'];
+        $parsedBody = $request->getParsedBody();
+    
+        $newIdBarang = $parsedBody['new_id_barang'];
+        $newIdPemesanan = $parsedBody['new_id_pemesanan'];
+        $newJumlah = $parsedBody['new_jumlah'];
+        $newHarga = $parsedBody['new_harga'];
+    
+        try {
+            $query = $db->prepare('CALL UpdateDetailPesanan(?, ?, ?, ?, ?)');
+            $query->bindParam(1, $id, PDO::PARAM_STR);
+            $query->bindParam(2, $newIdBarang, PDO::PARAM_STR);
+            $query->bindParam(3, $newIdPemesanan, PDO::PARAM_STR);
+            $query->bindParam(4, $newJumlah, PDO::PARAM_INT);
+            $query->bindParam(5, $newHarga, PDO::PARAM_INT);
+    
+            $query->execute();
+    
+            $response->getBody()->write(json_encode(
+                [
+                    'message' => 'Detail pesanan dengan id ' . $id . ' telah diperbarui'
+                ]
+            ));
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Gagal memperbarui detail pesanan: ' . $e->getMessage()
+                ]
+            ));
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
+    // delete
+    $app->delete('/detail_pesanan/{id}', function(Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+        $id = $args['id'];
+    
+        try {
+            $query = $db->prepare('CALL DeleteDetailPesanan(?)');
+            $query->bindParam(1, $id, PDO::PARAM_STR);
+    
+            $query->execute();
+    
+            $response->getBody()->write(json_encode(
+                [
+                    'message' => 'Detail pesanan dengan id ' . $id . ' telah dihapus'
+                ]
+            ));
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Gagal menghapus detail pesanan: ' . $e->getMessage()
+                ]
+            ));
+        }
+    
+        return $response->withHeader("Content-Type", "application/json");
+    });
+    
+    
+    // Barang
+    $app->get('/barang', function(Request $request, Response $response) {
+        $db = $this->get(PDO::class);
+
+        $query = $db->query("SELECT * FROM detail_pesanan"); //query digunakan agar langsung execute
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        $response->getBody()->write(json_encode($result));
+
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
+    // get untuk satu data, by id
+    
 };
