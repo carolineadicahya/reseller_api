@@ -68,14 +68,14 @@ return function (App $app) {
 
     // GET by Id = SELECT by Id
     // tabel barang
-    $app->get('/barang/{id_barang}', function(Request $request, Response $response, $args) {
+    $app->get('/barang/{barang_id}', function(Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
-        $id = $args['id_barang'];
+        $id = $args['barang_id'];
     
         // Menyiapkan SQL untuk memanggil procedure GetBarang
-        $sql = "CALL GetBarang(:id_barang)";
+        $sql = "CALL GetBarang(:barang_id)";
         $stmt = $db->prepare($sql);
-        $stmt->bindParam(':id_barang', $id, PDO::PARAM_STR);
+        $stmt->bindParam(':barang_id', $id, PDO::PARAM_STR);
     
         // Jalankan query
         if ($stmt->execute()) {
@@ -98,14 +98,14 @@ return function (App $app) {
     });
 
     // tabel supplier
-    $app->get('/supplier/{id_supplier}', function(Request $request, Response $response, $args) {
+    $app->get('/supplier/{supplier_id}', function(Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
-        $id = $args['id_supplier'];
+        $id = $args['supplier_id'];
     
         // Menyiapkan SQL untuk memanggil procedure GetBarang
-        $sql = "CALL GetSupplier(:id_supplier)";
+        $sql = "CALL GetSupplier(:supplier_id)";
         $stmt = $db->prepare($sql);
-        $stmt->bindParam(':id_supplier', $id, PDO::PARAM_STR);
+        $stmt->bindParam(':supplier_id', $id, PDO::PARAM_STR);
     
         // Jalankan query
         if ($stmt->execute()) {
@@ -128,14 +128,14 @@ return function (App $app) {
     });
 
     // tabel reseller
-    $app->get('/reseller/{id_reseller}', function(Request $request, Response $response, $args) {
+    $app->get('/reseller/{reseller_id}', function(Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
-        $id = $args['id_reseller'];
+        $id = $args['reseller_id'];
     
         // Menyiapkan SQL untuk memanggil procedure GetBarang
-        $sql = "CALL GetReseller(:id_reseller)";
+        $sql = "CALL GetReseller(:reseller_id)";
         $stmt = $db->prepare($sql);
-        $stmt->bindParam(':id_reseller', $id, PDO::PARAM_STR);
+        $stmt->bindParam(':reseller_id', $id, PDO::PARAM_STR);
     
         // Jalankan query
         if ($stmt->execute()) {
@@ -145,7 +145,7 @@ return function (App $app) {
                 $response->getBody()->write(json_encode($result[0]));
             } else {
                 // Jika data tidak ditemukan, kirim respons dengan status 404
-                $response->getBody()->write(json_encode(['error' => 'Data supplier tidak ditemukan']));
+                $response->getBody()->write(json_encode(['error' => 'Data reseller tidak ditemukan']));
                 $response = $response->withStatus(404);
             }
         } else {
@@ -158,14 +158,14 @@ return function (App $app) {
     });
     
     // tabel memesan
-    $app->get('/memesan/{id_memesan}', function(Request $request, Response $response, $args) {
+    $app->get('/memesan/{pemesanan_id}', function(Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
-        $id = $args['id_memesan'];
+        $id = $args['pemesanan_id'];
     
         // Menyiapkan SQL untuk memanggil procedure GetBarang
-        $sql = "CALL GetPemesanan(:id_memesan)";
+        $sql = "CALL GetPemesanan(:pemesanan_id)";
         $stmt = $db->prepare($sql);
-        $stmt->bindParam(':id_memesan', $id, PDO::PARAM_STR);
+        $stmt->bindParam(':pemesanan_id', $id, PDO::PARAM_STR);
     
         // Jalankan query
         if ($stmt->execute()) {
@@ -175,7 +175,7 @@ return function (App $app) {
                 $response->getBody()->write(json_encode($result[0]));
             } else {
                 // Jika data tidak ditemukan, kirim respons dengan status 404
-                $response->getBody()->write(json_encode(['error' => 'Data supplier tidak ditemukan']));
+                $response->getBody()->write(json_encode(['error' => 'Data pesanan tidak ditemukan']));
                 $response = $response->withStatus(404);
             }
         } else {
@@ -188,14 +188,14 @@ return function (App $app) {
     });
 
     // tabel detail_transaksi
-    $app->get('/detail_pesanan/{id_detail}', function(Request $request, Response $response, $args) {
+    $app->get('/detail_pesanan/{detail_id}', function(Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
-        $id = $args['id_detail'];
+        $id = $args['detail_id'];
     
         // Menyiapkan SQL untuk memanggil procedure GetDetailPesanan
-        $sql = "CALL GetDetailPesanan(:id_detail)";
+        $sql = "CALL GetDetailPesanan(:detail_id)";
         $stmt = $db->prepare($sql);
-        $stmt->bindParam(':id_detail', $id, PDO::PARAM_STR);
+        $stmt->bindParam(':detail_id', $id, PDO::PARAM_STR);
     
         // Jalankan query
         if ($stmt->execute()) {
@@ -205,7 +205,7 @@ return function (App $app) {
                 $response->getBody()->write(json_encode($result[0]));
             } else {
                 // Jika data tidak ditemukan, kirim respons dengan status 404
-                $response->getBody()->write(json_encode(['error' => 'Data pabrik tidak ditemukan']));
+                $response->getBody()->write(json_encode(['error' => 'Data detail pesanan tidak ditemukan']));
                 $response = $response->withStatus(404);
             }
         } else {
@@ -223,20 +223,20 @@ return function (App $app) {
         $parsedBody = $request->getParsedBody();
     
         $idBarang = $parsedBody['barang_id'];
-        $Nama = $parsedBody['barang_nama'];
-        $Brand = $parsedBody['barang_brand'];
-        $Model = $parsedBody['barang_model'];
-        $Jumlah = $parsedBody['barang_jumlah'];
+        $NamaBarang = $parsedBody['barang_nama'];
+        $BrandBarang = $parsedBody['barang_brand'];
+        $ModelBarang = $parsedBody['barang_model'];
+        $JumlahBarang = $parsedBody['barang_jumlah'];
     
         $db = $this->get(PDO::class);
     
         try {
             $query = $db->prepare('CALL AddBarang(?, ?, ?, ?, ?)');
             $query->bindParam(1, $idBarang, PDO::PARAM_STR);
-            $query->bindParam(2, $Nama, PDO::PARAM_STR);
-            $query->bindParam(3, $Brand, PDO::PARAM_STR);
-            $query->bindParam(4, $Model, PDO::PARAM_STR);
-            $query->bindParam(5, $Jumlah, PDO::PARAM_INT);
+            $query->bindParam(2, $NamaBarang, PDO::PARAM_STR);
+            $query->bindParam(3, $BrandBarang, PDO::PARAM_STR);
+            $query->bindParam(4, $ModelBarang, PDO::PARAM_STR);
+            $query->bindParam(5, $JumlahBarang, PDO::PARAM_INT);
     
             $query->execute();
     
@@ -248,7 +248,7 @@ return function (App $app) {
         } catch (PDOException $e) {
             $response->getBody()->write(json_encode(
                 [
-                    'error' => 'Gagal menyimpan detail pesanan: ' . $e->getMessage()
+                    'error' => 'Gagal menyimpan barang: ' . $e->getMessage()
                 ]
             ));
         }
@@ -256,17 +256,119 @@ return function (App $app) {
     });
 
     // tabel supplier
+    $app->post('/supplier', function(Request $request, Response $response) {
+        $parsedBody = $request->getParsedBody();
+    
+        $idSupplier = $parsedBody['supplier_id'];
+        $NamaSupplier = $parsedBody['supplier_name'];
+        $KontakSupplier = $parsedBody['supplier_contact'];
+        $AlamatSupplier = $parsedBody['supplier_address'];
+    
+        $db = $this->get(PDO::class);
+    
+        try {
+            $query = $db->prepare('CALL AddSupplier(?, ?, ?, ?)');
+            $query->bindParam(1, $idSupplier, PDO::PARAM_STR);
+            $query->bindParam(2, $NamaSupplier, PDO::PARAM_STR);
+            $query->bindParam(3, $KontakSupplier, PDO::PARAM_STR);
+            $query->bindParam(4, $AlamatSupplier, PDO::PARAM_STR);
+    
+            $query->execute();
+    
+            $response->getBody()->write(json_encode(
+                [
+                    'message' => 'Detail Supplier disimpan dengan id ' . $idSupplier
+                    ]
+            ));
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Gagal menyimpan supplier: ' . $e->getMessage()
+                ]
+            ));
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
     // tabel reseller
+    $app->post('/reseller', function(Request $request, Response $response) {
+        $parsedBody = $request->getParsedBody();
+    
+        $idReseller = $parsedBody['reseller_id'];
+        $NamaReseller = $parsedBody['reseller_name'];
+        $KontakReseller = $parsedBody['reseller_contact'];
+        $AlamatReseller = $parsedBody['reseller_address'];
+    
+        $db = $this->get(PDO::class);
+    
+        try {
+            $query = $db->prepare('CALL AddReseller(?, ?, ?, ?)');
+            $query->bindParam(1, $idReseller, PDO::PARAM_STR);
+            $query->bindParam(2, $NamaReseller, PDO::PARAM_STR);
+            $query->bindParam(3, $KontakReseller, PDO::PARAM_STR);
+            $query->bindParam(4, $AlamatReseller, PDO::PARAM_STR);
+    
+            $query->execute();
+    
+            $response->getBody()->write(json_encode(
+                [
+                    'message' => 'Detail Reseller disimpan dengan id ' . $idReseller
+                    ]
+            ));
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Gagal menyimpan reseller: ' . $e->getMessage()
+                ]
+            ));
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
     // tabel memesan
+    $app->post('/memesan', function(Request $request, Response $response) {
+        $parsedBody = $request->getParsedBody();
+    
+        $idMemesan = $parsedBody['pemesanan_id'];
+        $idSupplier = $parsedBody['supplier_id'];
+        $idReseller = $parsedBody['reseller_id'];
+        $Tanggal = $parsedBody['pemesanan_tanggal'];
+    
+        $db = $this->get(PDO::class);
+    
+        try {
+            $query = $db->prepare('CALL AddPemesanan(?, ?, ?, ?)');
+            $query->bindParam(1, $idMemesan, PDO::PARAM_STR);
+            $query->bindParam(2, $idSupplier, PDO::PARAM_STR);
+            $query->bindParam(3, $idReseller, PDO::PARAM_STR);
+            $query->bindParam(4, $Tanggal, PDO::PARAM_STR);
+    
+            $query->execute();
+    
+            $response->getBody()->write(json_encode(
+                [
+                    'message' => 'Detail Memesan disimpan dengan id ' . $idMemesan
+                    ]
+            ));
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Gagal menyimpan memesan: ' . $e->getMessage()
+                ]
+            ));
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
     // tabel detail_transaksi
     $app->post('/detail_pesanan', function(Request $request, Response $response) {
-        $parsedBody = $request->getParsedBody;
+        $parsedBody = $request->getParsedBody();
     
-        $idDetail = $parsedBody['id_detail'];
-        $idBarang = $parsedBody['id_barang'];
-        $idPesanan = $parsedBody['id_pemesanan'];
-        $jumlah = $parsedBody['jumlah'];
-        $harga = $parsedBody['harga'];
+        $idDetail = $parsedBody['detail_id'];
+        $idBarang = $parsedBody['barang_id'];
+        $idPesanan = $parsedBody['pesanan_id'];
+        $jumlahDetail = $parsedBody['jumlah_barang'];
+        $hargaDetail = $parsedBody['harga_barang'];
     
         $db = $this->get(PDO::class);
     
@@ -275,8 +377,8 @@ return function (App $app) {
             $query->bindParam(1, $idDetail, PDO::PARAM_STR);
             $query->bindParam(2, $idBarang, PDO::PARAM_STR);
             $query->bindParam(3, $idPesanan, PDO::PARAM_STR);
-            $query->bindParam(4, $jumlah, PDO::PARAM_INT);
-            $query->bindParam(5, $harga, PDO::PARAM_INT);
+            $query->bindParam(4, $jumlahDetail, PDO::PARAM_INT);
+            $query->bindParam(5, $hargaDetail, PDO::PARAM_INT);
     
             $query->execute();
     
@@ -342,18 +444,155 @@ return function (App $app) {
     });
 
     // tabel supplier
-    // tabel reseller
-    // tabel memesan
-    // tabel detail_transaksi
-    $app->put('/detail_pesanan/{id}', function(Request $request, Response $response, $args) {
+    $app->put('/supplier/{supplier_id}', function(Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
-        $id = $args['id'];
+        $id = $args['supplier_id']; // Menggunakan 'id_barang' sesuai dengan yang Anda definisikan dalam rute
         $parsedBody = $request->getParsedBody();
+        
+        $newName = isset($parsedBody['new_name']) ? $parsedBody['new_name'] : null;
+        $newContact = isset($parsedBody['new_contact']) ? $parsedBody['new_contact'] : null;
+        $newAddress = isset($parsedBody['new_address']) ? $parsedBody['new_address'] : null;
     
-        $newIdBarang = $parsedBody['new_id_barang'];
-        $newIdPemesanan = $parsedBody['new_id_pemesanan'];
-        $newJumlah = $parsedBody['new_jumlah'];
-        $newHarga = $parsedBody['new_harga'];
+        if ($newName === null && $newContact === null && $newAddress === null) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Tidak ada data yang diperbarui.'
+                ]
+            ));
+            return $response->withStatus(400); // Atur status kode ke 400 Bad Request atau sesuai kebutuhan
+        }
+        try {
+            $query = $db->prepare('CALL UpdateSupplier(?, ?, ?, ?)');
+            $query->bindParam(1, $id, PDO::PARAM_STR);
+            $query->bindParam(2, $newName, PDO::PARAM_STR);
+            $query->bindParam(3, $newContact, PDO::PARAM_STR);
+            $query->bindParam(4, $newAddress, PDO::PARAM_STR);
+        
+            $query->execute();
+        
+            $response->getBody()->write(json_encode(
+                [
+                    'message' => 'Detail supplier dengan id ' . $id . ' telah diperbarui'
+                ]
+            ));
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Gagal memperbarui supplier: ' . $e->getMessage()
+                ]
+            ));
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+    
+    // tabel reseller
+    $app->put('/reseller/{reseller_id}', function(Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+        $id = $args['reseller_id']; // Menggunakan 'id_barang' sesuai dengan yang Anda definisikan dalam rute
+        $parsedBody = $request->getParsedBody();
+        
+        $newName = isset($parsedBody['new_name']) ? $parsedBody['new_name'] : null;
+        $newContact = isset($parsedBody['new_contact']) ? $parsedBody['new_contact'] : null;
+        $newAddress = isset($parsedBody['new_address']) ? $parsedBody['new_address'] : null;
+    
+        if ($newName === null && $newContact === null && $newAddress === null) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Tidak ada data yang diperbarui.'
+                ]
+            ));
+            return $response->withStatus(400); // Atur status kode ke 400 Bad Request atau sesuai kebutuhan
+        }
+        try {
+            $query = $db->prepare('CALL UpdateReseller(?, ?, ?, ?)');
+            $query->bindParam(1, $id, PDO::PARAM_STR);
+            $query->bindParam(2, $newName, PDO::PARAM_STR);
+            $query->bindParam(3, $newContact, PDO::PARAM_STR);
+            $query->bindParam(4, $newAddress, PDO::PARAM_STR);
+        
+            $query->execute();
+        
+            $response->getBody()->write(json_encode(
+                [
+                    'message' => 'Detail reseller dengan id ' . $id . ' telah diperbarui'
+                ]
+            ));
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Gagal memperbarui reseller: ' . $e->getMessage()
+                ]
+            ));
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
+    // tabel memesan
+    $app->put('/memesan/{pemesanan_id}', function(Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+        $id = $args['pemesanan_id']; // Menggunakan 'id_barang' sesuai dengan yang Anda definisikan dalam rute
+        $parsedBody = $request->getParsedBody();
+        
+        $newSupplier = isset($parsedBody['new_supplier_id']) ? $parsedBody['new_supplier_id'] : null;
+        $newReseller = isset($parsedBody['new_reseller_id']) ? $parsedBody['new_reseller_id'] : null;
+        $newDate = isset($parsedBody['new_pemesanan_tanggal']) ? $parsedBody['new_pemesanan_tanggal'] : null;
+    
+        if ($newSupplier === null && $newReseller === null && $newDate === null) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Tidak ada data yang diperbarui.'
+                ]
+            ));
+            return $response->withStatus(400); // Atur status kode ke 400 Bad Request atau sesuai kebutuhan
+        }
+        try {
+            $query = $db->prepare('CALL UpdatePemesanan(?, ?, ?, ?)');
+            $query->bindParam(1, $id, PDO::PARAM_STR);
+            $query->bindParam(2, $newSupplier, PDO::PARAM_STR);
+            $query->bindParam(3, $newReseller, PDO::PARAM_STR);
+            $query->bindParam(4, $newDate, PDO::PARAM_STR);
+        
+            $query->execute();
+        
+            $response->getBody()->write(json_encode(
+                [
+                    'message' => 'Pesanan dengan id ' . $id . ' telah diperbarui'
+                ]
+            ));
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Gagal memperbarui pesanan: ' . $e->getMessage()
+                ]
+            ));
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
+    // tabel detail_transaksi
+    // Gagal memperbarui detail pesanan: 
+    // SQLSTATE[23000]: Integrity constraint violation: 
+    // 1452 Cannot add or update a child row: 
+    // a foreign key constraint fails (`reseller`.`detail_pesanan`, 
+    // CONSTRAINT `detail_pesanan_ibfk_2` FOREIGN KEY (`id_pemesanan`) REFERENCES `memesan` (`id_memesan`))"
+    $app->put('/detail_pesanan/{detail_id}', function(Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+        $id = $args['detail_id'];
+        $parsedBody = $request->getParsedBody();
+
+        $newIdBarang = isset($parsedBody['new_barang_id']) ? $parsedBody['new_barang_id'] : null;
+        $newIdPemesanan = isset($parsedBody['new_pesanan_id']) ? $parsedBody['new_pesanan_id'] : null;
+        $newJumlah = isset($parsedBody['new_jumlah_barang']) ? $parsedBody['new_jumlah_barang'] : null;
+        $newHarga = isset($parsedBody['new_harga_barang']) ? $parsedBody['new_harga_barang'] : null;
+    
+        if ($newIdBarang === null && $newIdPemesanan === null && $newJumlah === null && $newHarga === null) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Tidak ada data yang diperbarui.'
+                ]
+            ));
+            return $response->withStatus(400); // Atur status kode ke 400 Bad Request atau sesuai kebutuhan
+        }
     
         try {
             $query = $db->prepare('CALL UpdateDetailPesanan(?, ?, ?, ?, ?)');
@@ -383,9 +622,9 @@ return function (App $app) {
 
     // DELETE = DELETE
     // tabel barang
-    $app->delete('/barang/{id_barang}', function(Request $request, Response $response, $args) {
+    $app->delete('/barang/{barang_id}', function(Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
-        $id = $args['id_barang'];
+        $id = $args['barang_id'];
     
         try {
             $query = $db->prepare('CALL DeleteBarang(?)');
@@ -395,7 +634,7 @@ return function (App $app) {
     
             $response->getBody()->write(json_encode(
                 [
-                    'message' => 'Detail pesanan dengan id ' . $id . ' telah dihapus'
+                    'message' => 'Detail barang dengan id ' . $id . ' telah dihapus'
                 ]
             ));
         } catch (PDOException $e) {
@@ -409,12 +648,89 @@ return function (App $app) {
     });
 
     // tabel supplier
-    // tabel reseller
-    // tabel memesan
-    // tabel detail_transaksi
-    $app->delete('/detail_pesanan/{id}', function(Request $request, Response $response, $args) {
+    $app->delete('/supplier/{supplier_id}', function(Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
-        $id = $args['id'];
+        $id = $args['supplier_id'];
+    
+        try {
+            $query = $db->prepare('CALL DeleteSupplier(?)');
+            $query->bindParam(1, $id, PDO::PARAM_STR);
+    
+            $query->execute();
+    
+            $response->getBody()->write(json_encode(
+                [
+                    'message' => 'Detail supplier dengan id ' . $id . ' telah dihapus'
+                ]
+            ));
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Gagal menghapus supplier: ' . $e->getMessage()
+                ]
+            ));
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
+    // tabel reseller
+    $app->delete('/reseller/{reseller_id}', function(Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+        $id = $args['reseller_id'];
+    
+        try {
+            $query = $db->prepare('CALL DeleteReseller(?)');
+            $query->bindParam(1, $id, PDO::PARAM_STR);
+    
+            $query->execute();
+    
+            $response->getBody()->write(json_encode(
+                [
+                    'message' => 'Detail reseller dengan id ' . $id . ' telah dihapus'
+                ]
+            ));
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Gagal menghapus reseller: ' . $e->getMessage()
+                ]
+            ));
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
+    // tabel memesan
+    $app->delete('/memesan/{pemesanan_id}', function(Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+        $id = $args['pemesanan_id'];
+    
+        try {
+            $query = $db->prepare('CALL DeletePemesanan(?)');
+            $query->bindParam(1, $id, PDO::PARAM_STR);
+    
+            $query->execute();
+    
+            $response->getBody()->write(json_encode(
+                [
+                    'message' => 'Pesanan dengan id ' . $id . ' telah dihapus'
+                ]
+            ));
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(
+                [
+                    'error' => 'Gagal menghapus pesanan: ' . $e->getMessage()
+                ]
+            ));
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+    
+    // tabel detail_transaksi
+    // "Gagal menghapus detail pesanan: SQLSTATE[42S22]: 
+    // Column not found: 1054 Unknown column 'barang.id_barang' in 'where clause'
+    $app->delete('/detail_pesanan/{detail_id}', function(Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+        $id = $args['detail_id'];
     
         try {
             $query = $db->prepare('CALL DeleteDetailPesanan(?)');
@@ -434,7 +750,6 @@ return function (App $app) {
                 ]
             ));
         }
-    
         return $response->withHeader("Content-Type", "application/json");
     });
 
