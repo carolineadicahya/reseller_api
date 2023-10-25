@@ -570,11 +570,6 @@ return function (App $app) {
     });
 
     // tabel detail_transaksi
-    // Gagal memperbarui detail pesanan: 
-    // SQLSTATE[23000]: Integrity constraint violation: 
-    // 1452 Cannot add or update a child row: 
-    // a foreign key constraint fails (`reseller`.`detail_pesanan`, 
-    // CONSTRAINT `detail_pesanan_ibfk_2` FOREIGN KEY (`id_pemesanan`) REFERENCES `memesan` (`id_memesan`))"
     $app->put('/detail_pesanan/{detail_id}', function(Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
         $id = $args['detail_id'];
@@ -726,8 +721,6 @@ return function (App $app) {
     });
     
     // tabel detail_transaksi
-    // "Gagal menghapus detail pesanan: SQLSTATE[42S22]: 
-    // Column not found: 1054 Unknown column 'barang.id_barang' in 'where clause'
     $app->delete('/detail_pesanan/{detail_id}', function(Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
         $id = $args['detail_id'];
