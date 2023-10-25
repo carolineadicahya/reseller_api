@@ -85,7 +85,7 @@ return function (App $app) {
                 $response->getBody()->write(json_encode($result[0]));
             } else {
                 // Jika data tidak ditemukan, kirim respons dengan status 404
-                $response->getBody()->write(json_encode(['error' => 'Data pabrik tidak ditemukan']));
+                $response->getBody()->write(json_encode(['error' => 'Data barang tidak ditemukan']));
                 $response = $response->withStatus(404);
             }
         } else {
@@ -98,17 +98,104 @@ return function (App $app) {
     });
 
     // tabel supplier
-    // tabel reseller
-    // tabel memesan
-    // tabel detail_transaksi
-    $app->get('/detail_pesanan/{id}', function(Request $request, Response $response, $args) {
+    $app->get('/supplier/{id_supplier}', function(Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
-        $id = $args['id'];
+        $id = $args['id_supplier'];
+    
+        // Menyiapkan SQL untuk memanggil procedure GetBarang
+        $sql = "CALL GetSupplier(:id_supplier)";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id_supplier', $id, PDO::PARAM_STR);
+    
+        // Jalankan query
+        if ($stmt->execute()) {
+            // Mengambil hasil dari procedure
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($result) {
+                $response->getBody()->write(json_encode($result[0]));
+            } else {
+                // Jika data tidak ditemukan, kirim respons dengan status 404
+                $response->getBody()->write(json_encode(['error' => 'Data supplier tidak ditemukan']));
+                $response = $response->withStatus(404);
+            }
+        } else {
+            // Tangani kesalahan eksekusi query
+            $errorInfo = $stmt->errorInfo();
+            $response->getBody()->write(json_encode(['error' => $errorInfo]));
+            $response = $response->withStatus(500); // Atur status kode 500 untuk kesalahan server
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
+    // tabel reseller
+    $app->get('/reseller/{id_reseller}', function(Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+        $id = $args['id_reseller'];
+    
+        // Menyiapkan SQL untuk memanggil procedure GetBarang
+        $sql = "CALL GetReseller(:id_reseller)";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id_reseller', $id, PDO::PARAM_STR);
+    
+        // Jalankan query
+        if ($stmt->execute()) {
+            // Mengambil hasil dari procedure
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($result) {
+                $response->getBody()->write(json_encode($result[0]));
+            } else {
+                // Jika data tidak ditemukan, kirim respons dengan status 404
+                $response->getBody()->write(json_encode(['error' => 'Data supplier tidak ditemukan']));
+                $response = $response->withStatus(404);
+            }
+        } else {
+            // Tangani kesalahan eksekusi query
+            $errorInfo = $stmt->errorInfo();
+            $response->getBody()->write(json_encode(['error' => $errorInfo]));
+            $response = $response->withStatus(500); // Atur status kode 500 untuk kesalahan server
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+    
+    // tabel memesan
+    $app->get('/memesan/{id_memesan}', function(Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+        $id = $args['id_memesan'];
+    
+        // Menyiapkan SQL untuk memanggil procedure GetBarang
+        $sql = "CALL GetPemesanan(:id_memesan)";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id_memesan', $id, PDO::PARAM_STR);
+    
+        // Jalankan query
+        if ($stmt->execute()) {
+            // Mengambil hasil dari procedure
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($result) {
+                $response->getBody()->write(json_encode($result[0]));
+            } else {
+                // Jika data tidak ditemukan, kirim respons dengan status 404
+                $response->getBody()->write(json_encode(['error' => 'Data supplier tidak ditemukan']));
+                $response = $response->withStatus(404);
+            }
+        } else {
+            // Tangani kesalahan eksekusi query
+            $errorInfo = $stmt->errorInfo();
+            $response->getBody()->write(json_encode(['error' => $errorInfo]));
+            $response = $response->withStatus(500); // Atur status kode 500 untuk kesalahan server
+        }
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
+    // tabel detail_transaksi
+    $app->get('/detail_pesanan/{id_detail}', function(Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+        $id = $args['id_detail'];
     
         // Menyiapkan SQL untuk memanggil procedure GetDetailPesanan
-        $sql = "CALL GetDetailPesanan(:id)";
+        $sql = "CALL GetDetailPesanan(:id_detail)";
         $stmt = $db->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_STR);
+        $stmt->bindParam(':id_detail', $id, PDO::PARAM_STR);
     
         // Jalankan query
         if ($stmt->execute()) {
