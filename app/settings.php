@@ -25,8 +25,8 @@ return function (ContainerBuilder $containerBuilder) {
                     'host' => '127.0.0.1',
                     // db sesuai database yang digunakan.
                     'dbname' => 'reseller',
-                    'user' => 'root',
-                    'password' => '',
+                    'user' => 'meong_lucu',
+                    'password' => 'meong123',
                 ]
             ]);
         },
