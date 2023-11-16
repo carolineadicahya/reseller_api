@@ -10,6 +10,7 @@ use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
+    // PROCEDURE + TRANSACTION (CRUD)
     // GET = SELECT
     // tabel barang
     $app->get('/barang', function(Request $request, Response $response) {
@@ -1128,6 +1129,87 @@ return function (App $app) {
         }
     
         return $response->withHeader("Content-Type", "application/json");
-    });    
+    });
 
+    
+    
+    // FUNCTION 
+    $app->get('/reseller_avg/{id_reseller}', function(Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+    
+        try {
+            // Ganti $id_reseller dengan $args['id_reseller']
+            $stmt = $db->prepare("SELECT reseller_avg(:id_reseller)");
+            $stmt->bindParam(':id_reseller', $args['id_reseller'], PDO::PARAM_STR);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            if (empty($result)) {
+                $response->getBody()->write(json_encode(['error' => 'Data rata-rata harga tidak ditemukan.']));
+                return $response->withStatus(404);
+            }
+    
+            $response->getBody()->write(json_encode($result));
+            return $response->withHeader("Content-Type", "application/json");
+    
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(['error' => 'Gagal mengambil data rata-rata harga: ' . $e->getMessage()]));
+            return $response->withStatus(500);
+        }
+    });
+    
+
+
+    // VIEW
+    // Supplier - Reseller
+    $app->get('/supplier-reseller', function(Request $request, Response $response) {
+        $db = $this->get(PDO::class);
+    
+        try {
+            $stmt = $db->prepare("CALL SupplierReseller()");
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Menutup statement setelah penggunaan
+            $stmt->closeCursor();
+    
+            if (empty($result)) {
+                $response->getBody()->write(json_encode(['error' => 'Data tidak ditemukan.']));
+                return $response->withStatus(404); // Atur status kode ke 404 Not Found atau sesuai kebutuhan
+            }
+    
+            $response->getBody()->write(json_encode($result));
+            return $response->withHeader("Content-Type", "application/json");
+
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(['error' => 'Gagal mengambil data: ' . $e->getMessage()]));
+            return $response->withStatus(500); // Atur status kode ke 500 Internal Server Error atau sesuai kebutuhan
+        }
+    });
+
+    // Detail Order
+    $app->get('/detail-order', function(Request $request, Response $response) {
+        $db = $this->get(PDO::class);
+    
+        try {
+            $stmt = $db->prepare("CALL OrderDetails()");
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Menutup statement setelah penggunaan
+            $stmt->closeCursor();
+    
+            if (empty($result)) {
+                $response->getBody()->write(json_encode(['error' => 'Detail Order tidak ditemukan.']));
+                return $response->withStatus(404); // Atur status kode ke 404 Not Found atau sesuai kebutuhan
+            }
+    
+            $response->getBody()->write(json_encode($result));
+            return $response->withHeader("Content-Type", "application/json");
+
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(['error' => 'Gagal mengambil Detail Order: ' . $e->getMessage()]));
+            return $response->withStatus(500); // Atur status kode ke 500 Internal Server Error atau sesuai kebutuhan
+        }
+    });
 };

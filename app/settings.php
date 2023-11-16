@@ -23,6 +23,7 @@ return function (ContainerBuilder $containerBuilder) {
                 ],
                 'db' => [
                     'host' => '127.0.0.1',
+                    // 'host' => 'localhost',
                     // db sesuai database yang digunakan.
                     'dbname' => 'reseller',
                     'user' => 'meong_lucu',
