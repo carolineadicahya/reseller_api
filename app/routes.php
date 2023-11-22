@@ -1134,6 +1134,7 @@ return function (App $app) {
     
     
     // FUNCTION 
+    // rata-rata pembelian reseller
     $app->get('/reseller_avg/{id_reseller}', function(Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
     
@@ -1157,6 +1158,31 @@ return function (App $app) {
             return $response->withStatus(500);
         }
     });
+
+    // total harga pesanan reseller
+    $app->get('/total_harga/{id_reseller}', function(Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+    
+        try {
+            // Ganti $id_reseller dengan $args['id_reseller']
+            $stmt = $db->prepare("SELECT total_harga_pemesanan_reseller(:id_reseller)");
+            $stmt->bindParam(':id_reseller', $args['id_reseller'], PDO::PARAM_STR);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            if (empty($result)) {
+                $response->getBody()->write(json_encode(['error' => 'Data total harga tidak ditemukan.']));
+                return $response->withStatus(404);
+            }
+    
+            $response->getBody()->write(json_encode($result));
+            return $response->withHeader("Content-Type", "application/json");
+    
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(['error' => 'Gagal mengambil data total harga: ' . $e->getMessage()]));
+            return $response->withStatus(500);
+        }
+    });
     
 
 
@@ -1166,7 +1192,7 @@ return function (App $app) {
         $db = $this->get(PDO::class);
     
         try {
-            $stmt = $db->prepare("CALL SupplierReseller()");
+            $stmt = $db->prepare("CALL GetSupplierReseller()");
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
@@ -1192,7 +1218,7 @@ return function (App $app) {
         $db = $this->get(PDO::class);
     
         try {
-            $stmt = $db->prepare("CALL OrderDetails()");
+            $stmt = $db->prepare("CALL GetOrderDetails()");
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
